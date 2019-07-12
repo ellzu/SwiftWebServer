@@ -1,5 +1,5 @@
 //
-//  SWSServer.swift
+//  Server.swift
 //  COpenSSL
 //
 //  Created by ellzu on 2019/7/12.
@@ -11,21 +11,21 @@ import PerfectHTTP
 
 @_silgen_name("daynmicCall") func DaynmicCall(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Void
 
-class SWSServer {
-    var config : SWSServerConfig!
+class Server {
+    var config : ServerConfig!
     
-    public init (_ config : SWSServerConfig) {
+    public init (_ config : ServerConfig) {
         self.config = config
     }
     public init (_ filePath: String) throws {
         let configUrl : URL! = URL(fileURLWithPath: filePath)
         let decoder : JSONDecoder! = JSONDecoder()
         let data : Data! = try Data(contentsOf: configUrl)
-        let config : SWSServerConfig! = try decoder.decode(SWSServerConfig.self, from: data)
+        let config : ServerConfig! = try decoder.decode(ServerConfig.self, from: data)
         self.config = config
     }
     
-    func staticFileHandler(_ host: SWSServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func staticFileHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
         let staticFileHandler: StaticFileHandler! = StaticFileHandler(documentRoot: host.path, allowResponseFilters: true)
         if request.path.endsWithFilePathSeparator {
             request.path = request.path + (host.welcomeFile ?? config.welcomeFile ?? "")
@@ -38,7 +38,7 @@ class SWSServer {
     }
     
     
-    func hostRequestHandler(_ host: SWSServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func hostRequestHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
         //TODO: dynamic page forward
         
         //        let imagePath: String = host.path + "/libWSPExample.dylib"
@@ -63,7 +63,7 @@ class SWSServer {
         //        dlclose(handler)
         
     }
-    func pageNotFoundHandler(_ host: SWSServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func pageNotFoundHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
         let notFoundPagePath = host.path + "/" + (host.notFoundPage ?? config.notFoundPage ?? "404.html")
         do {
             let fileUrl: URL! = URL(fileURLWithPath: notFoundPagePath, isDirectory: false)

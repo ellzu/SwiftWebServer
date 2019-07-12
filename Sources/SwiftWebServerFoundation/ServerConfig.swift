@@ -5,7 +5,7 @@
 //  Created by ellzu on 2019/7/12.
 //
 
-public class SWSServerConfig: Codable {
+public class ServerConfig: Codable {
     
     public class Host: Codable {
         public var domain: String! = ""

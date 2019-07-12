@@ -1,2 +1,2 @@
 
-try SWSServer("./Server.json").run()
+try Server("./Server.json").run()
