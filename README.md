@@ -1,2 +1,5 @@
 # SwiftWebServer
-基于 Swift 开发的Web服务器 实现类似Tomcat上挂载多域名能力
+
+SwiftWebServer 是一个基于Perfect框架开发的Web服务器，可以实现类似Tomcat一样挂载多个Web服务在同一个端口以及绑定多域名等能力 同时也可以不写任何代码的情况下部署出静态网站服务
+
+SwiftWebServer的配置文件采用Json格式编写
