@@ -1,0 +1,15 @@
+{
+	"port" : 8080,
+    "welcomeFile" : "index.html",
+    "notFoundPage" : "404.html",
+	"hosts" : [
+		{
+			"domain" : "www.lh.com",
+			"path" : "/Users/ellzu/webs/www.lh.com"
+		},
+		{
+			"domain" : "api.lh.com",
+			"path" : "/Users/ellzu/webs/api.lh.com"
+		}
+	]
+}
