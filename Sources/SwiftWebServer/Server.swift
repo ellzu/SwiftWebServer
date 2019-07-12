@@ -9,7 +9,7 @@ import Foundation
 import PerfectHTTPServer
 import PerfectHTTP
 
-@_silgen_name("daynmicCall") func DaynmicCall(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Void
+@_silgen_name("daynmicCall") func DaynmicCall(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Int
 
 class Server {
     var config : ServerConfig!
@@ -22,15 +22,16 @@ class Server {
         let decoder : JSONDecoder! = JSONDecoder()
         let data : Data! = try Data(contentsOf: configUrl)
         let config : ServerConfig! = try decoder.decode(ServerConfig.self, from: data)
+        config.loadHostConfig()
         self.config = config
     }
     
-    func staticFileHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
-        let staticFileHandler: StaticFileHandler! = StaticFileHandler(documentRoot: host.path, allowResponseFilters: true)
+    func staticFileHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+        let staticFileHandler: StaticFileHandler! = StaticFileHandler(documentRoot: host.docPath, allowResponseFilters: true)
         if request.path.endsWithFilePathSeparator {
             request.path = request.path + (host.welcomeFile ?? config.welcomeFile ?? "")
         }
-        if FileManager.default.fileExists(atPath:(host.path + request.path)) {
+        if FileManager.default.fileExists(atPath:(host.docPath + request.path)) {
             staticFileHandler.handleRequest(request: request, response: response)
         } else {
             pageNotFoundHandler(host, request, response)
@@ -38,33 +39,25 @@ class Server {
     }
     
     
-    func hostRequestHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
-        //TODO: dynamic page forward
+    func hostRequestHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+        var dynamicCode:Int! = 0
+        if host.libraryPath != nil {
+            let requestPoint = UnsafeMutablePointer<HTTPRequest>.allocate(capacity: 1)
+            requestPoint.pointee = request
+            let responsePoint = UnsafeMutablePointer<HTTPResponse>.allocate(capacity: 1)
+            responsePoint.pointee = response
+            dynamicCode = DaynmicCall(path:host.libraryPath!.cString(using: .utf8), request: requestPoint, response: responsePoint)
+        } else {
+             dynamicCode = -1
+        }
         
-        //        let imagePath: String = host.path + "/libWSPExample.dylib"
-        let imagePath: String = host.path + "/WSPExample.framework/WSPExample"
-        
-        //C call
-        let requestPoint = UnsafeMutablePointer<HTTPRequest>.allocate(capacity: 1)
-        requestPoint.pointee = request
-        let responsePoint = UnsafeMutablePointer<HTTPResponse>.allocate(capacity: 1)
-        responsePoint.pointee = response
-        DaynmicCall(path:imagePath.cString(using: .utf8), request: requestPoint, response: responsePoint)
-        
-        //        let handler: UnsafeMutableRawPointer! = dlopen(imagePath.cString(using: .utf8), RTLD_NOW)
-        //        let sym: UnsafeMutableRawPointer! = dlsym(handler, "WSPExample_requestHandler_C".cString(using: .utf8))
-        //        if sym != nil {
-        //            typealias ECC = @convention(c) (Any, Any)->(Void)
-        //            let xxx: ECC = unsafeBitCast(sym, to: ECC.self)
-        //            xxx(requestPoint, responsePoint)
-        //        } else {
-        //            staticFileHandler(host, request, response);
-        //        }
-        //        dlclose(handler)
+        if dynamicCode != 0 {
+            staticFileHandler(host, request, response)
+        }
         
     }
-    func pageNotFoundHandler(_ host: ServerConfig.Host, _ request: HTTPRequest, _ response: HTTPResponse) {
-        let notFoundPagePath = host.path + "/" + (host.notFoundPage ?? config.notFoundPage ?? "404.html")
+    func pageNotFoundHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+        let notFoundPagePath = host.docPath + "/" + (host.notFoundPage ?? config.notFoundPage ?? "404.html")
         do {
             let fileUrl: URL! = URL(fileURLWithPath: notFoundPagePath, isDirectory: false)
             let body : String = try String(contentsOf: fileUrl)
@@ -85,7 +78,7 @@ class Server {
     func requestHandler(_ request: HTTPRequest, _ response: HTTPResponse) {
         let domain: String! = requestDomain(request)
         var success: Bool! = false
-        for host in config.hosts ?? [] {
+        for host in config.hostConfigs ?? [] {
             if domain != host.domain /*domain.compare(host.domain) != ComparisonResult.orderedSame*/ {
                 continue
             }
@@ -106,7 +99,7 @@ class Server {
     }
     
     public func run() throws {
-        if config.port == 0 || config.hosts!.count == 0 {
+        if config.port == 0 || config.hostConfigs!.count == 0 {
             throw SWSError("WebServer", -1, message: "config error")
         }
         

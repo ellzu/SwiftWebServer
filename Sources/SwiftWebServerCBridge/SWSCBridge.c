@@ -7,12 +7,13 @@
 
 #include <dlfcn.h>
 
-typedef void(*ExampleCallHandler)(void *request, void *response);
+typedef int(*ExampleCallHandler)(void *request, void *response);
 
-void daynmicCall(const char *path,void *request, void *response)
+int daynmicCall(const char *path,void *request, void *response)
 {
     void *handler = dlopen(path, RTLD_NOW);
-    void *symbol = dlsym(handler, "WSPExample_requestHandler_C");
-    ((ExampleCallHandler)symbol)(request, response);
+    void *symbol = dlsym(handler, "onRequest_C");
+    int code = ((ExampleCallHandler)symbol)(request, response);
     dlclose(handler);
+    return code;
 }

@@ -15,7 +15,11 @@ let package = Package(
             targets: ["SwiftWebServerFoundation"]),
         .library(
             name: "SwiftWebServerCBridge",
-            targets: ["SwiftWebServerCBridge"])
+            targets: ["SwiftWebServerCBridge"]),
+        .library(
+            name: "SWSExample",
+            type: .dynamic,
+            targets: ["SWSExample"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -33,10 +37,13 @@ let package = Package(
             dependencies: ["PerfectHTTPServer"]),
         .target(
             name: "SwiftWebServerCBridge",
-            dependencies: []
-        ),
+            dependencies: []),
+        .target(
+            name: "SWSExample",
+            dependencies: ["SwiftWebServerFoundation"]),
         .testTarget(
             name: "SwiftWebServerTests",
             dependencies: ["SwiftWebServer"]),
+            
     ]
 )

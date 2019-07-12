@@ -5,11 +5,11 @@
 	"hosts" : [
 		{
 			"domain" : "www.lh.com",
-			"path" : "/Users/ellzu/webs/www.lh.com"
+			"path" : "./www.lh.com"
 		},
 		{
 			"domain" : "api.lh.com",
-			"path" : "/Users/ellzu/webs/api.lh.com"
+			"path" : "./api.lh.com"
 		}
 	]
 }
