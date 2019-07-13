@@ -9,15 +9,18 @@ import Foundation
 import PerfectHTTP
 
 var a:Int! = 0
-@_silgen_name("onRequest_C")
-public func onRequest(_ requestPointer: UnsafeMutablePointer<HTTPRequest>!, _ responsePointer: UnsafeMutablePointer<HTTPResponse>!) -> Int {
+@_silgen_name("swsOnHostRequest_C")
+public func swsOnHostRequest(_ requestPointer: UnsafeMutablePointer<HTTPRequest>!, _ responsePointer: UnsafeMutablePointer<HTTPResponse>!) -> Int {
     let request = requestPointer.pointee
     let response = responsePointer.pointee
-    a = a + 1
-    if a % 2 == 0 {
-        response.appendBody(string: "onRequest:" + String(a))
-        response.completed()
-        return 0
+    let cls:AnyClass? = NSClassFromString("UserRC")
+    let obj = (cls as! RequestControllerProtocol.Type).newInstance()
+    let mirror = Mirror(reflecting: obj)
+    for p in mirror.children {
+        print("\(p.label) : \(p.value)")
+        response.appendBody(string: "<div>\(p.label) : \(p.value)</div>")
     }
-    return 3
+    
+    response.completed();
+    return 0
 }

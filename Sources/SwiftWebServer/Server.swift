@@ -9,7 +9,7 @@ import Foundation
 import PerfectHTTPServer
 import PerfectHTTP
 
-@_silgen_name("daynmicCall") func DaynmicCall(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Int
+@_silgen_name("swsForwardRequestToHost") func swsForwardRequestToHost(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Int
 
 class Server {
     var config : ServerConfig!
@@ -46,7 +46,7 @@ class Server {
             requestPoint.pointee = request
             let responsePoint = UnsafeMutablePointer<HTTPResponse>.allocate(capacity: 1)
             responsePoint.pointee = response
-            dynamicCode = DaynmicCall(path:host.libraryPath!.cString(using: .utf8), request: requestPoint, response: responsePoint)
+            dynamicCode = swsForwardRequestToHost(path:host.libraryPath!.cString(using: .utf8), request: requestPoint, response: responsePoint)
         } else {
              dynamicCode = -1
         }

@@ -7,13 +7,13 @@
 
 #include <dlfcn.h>
 
-typedef int(*ExampleCallHandler)(void *request, void *response);
+typedef int(*swsOnHostRequest_C)(void *request, void *response);
 
-int daynmicCall(const char *path,void *request, void *response)
+int swsForwardRequestToHost(const char *path,void *request, void *response)
 {
     void *handler = dlopen(path, RTLD_NOW);
-    void *symbol = dlsym(handler, "onRequest_C");
-    int code = ((ExampleCallHandler)symbol)(request, response);
+    void *symbol = dlsym(handler, "swsOnHostRequest_C");
+    int code = ((swsOnHostRequest_C)symbol)(request, response);
     dlclose(handler);
     return code;
 }
