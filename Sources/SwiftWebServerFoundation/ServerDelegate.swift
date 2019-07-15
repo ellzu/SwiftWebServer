@@ -10,4 +10,8 @@ import Foundation
 public protocol ServerDelegate {
     static func delegateInstance() -> ServerDelegate
     func serverDidLaunched() -> Void
+    
+    func willHandleRequest() -> Void
+    func handleRequest() -> Void
+    func didHandleRequest() -> Void
 }

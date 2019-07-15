@@ -18,16 +18,36 @@ public class Server {
         }
     }
     
-    required init() {
-        
-    }
+    private var dispatchRequestQueue:DispatchQueue!
+    private var semaphore:DispatchSemaphore!
     
+    required init() {
+        self.semaphore = DispatchSemaphore(value: 4)
+        self.dispatchRequestQueue = DispatchQueue(label: "Server.dispatchRequestQueue");
+    }
+
     func serverDidLaunched() -> Void {
         
         delegate?.serverDidLaunched()
         
     }
     
+    func onRequestEvent() -> Void {
+        //让所有请求暂存在 dispatchRequestQueue
+        self.dispatchRequestQueue.async {
+            self.semaphore.wait()
+            //使用全局线程并行同时处理有限的请求量
+            DispatchQueue.global().async {
+                self.delegate?.willHandleRequest()
+                //TODO:
+                self.delegate?.handleRequest()
+                //TODO:
+                self.delegate?.didHandleRequest()
+                //TODO:
+                self.semaphore.signal()
+            }
+        }
+    }
     
     
 }
@@ -37,7 +57,8 @@ public func SWSServerLoaded() -> Void {
     Server.instance.serverDidLaunched()
 }
 
-func SWSOnRequest() -> Void {
-    
+@_silgen_name("SWSOnRequestEvent_C")
+func SWSOnRequestEvent() -> Void {
+    Server.instance.onRequestEvent()
 }
 
