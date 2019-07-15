@@ -9,16 +9,13 @@
 import PerfectHTTPServer
 import PerfectHTTP
 
-//@dynamicMemberLookup
-//@dynamicCallable
 @dynamicMemberLookup
 public protocol RequestControllerProtocol {
 //    subscript(dynamicMember member: String) -> (HTTPRequest,HTTPResponse) ->Void
     static func newInstance() -> RequestControllerProtocol?
     
 }
-//@dynamicMemberLookup
-//@dynamicCallable
+
 extension RequestControllerProtocol {
     
 //    public init(){

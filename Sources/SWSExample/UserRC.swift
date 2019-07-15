@@ -9,6 +9,7 @@ import SwiftWebServerFoundation
 import PerfectHTTPServer
 import PerfectHTTP
 
+@dynamicCallable
 open class UserRC: BaseRequestController {
     
     open override subscript(dynamicMember member: String) -> (HTTPRequest,HTTPResponse) ->Void  {
