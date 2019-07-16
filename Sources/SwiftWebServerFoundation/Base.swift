@@ -16,7 +16,7 @@ public func swsOnHostRequest(_ requestPointer: UnsafeMutablePointer<HTTPRequest>
     let response = responsePointer.pointee
     let cls:AnyClass? = NSClassFromString("SWSExample.UserRC")
 //    let sel = NSSelectorFromString("xxx")
-    let obj:BaseRequestController? = (cls as! RequestControllerProtocol.Type).newInstance() as! BaseRequestController
+//    let obj:BaseRequestController? = (cls as! RequestControllerProtocol.Type).newInstance() as! BaseRequestController
 //    (obj.xxx(_:_:) as! (HTTPRequest,HTTPResponse) ->Void)(request,response)
 //    let mirror = Mirror(reflecting: obj)
 //    print("\(mirror.children)")
@@ -24,8 +24,8 @@ public func swsOnHostRequest(_ requestPointer: UnsafeMutablePointer<HTTPRequest>
 //        print("\(p.label) : \(p.value)")
 //        response.appendBody(string: "<div>\(p.label) : \(p.value)</div>")
 //    }
-    let fxx:((HTTPRequest,HTTPResponse) -> Void)! = obj!.vx3
-    fxx(request,response)
+//    let fxx:((HTTPRequest,HTTPResponse) -> Void)! = obj!.vx3
+//    fxx(request,response)
 //    response.completed();
     return 0
 }

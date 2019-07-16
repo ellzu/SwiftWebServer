@@ -9,7 +9,7 @@ import Foundation
 import PerfectHTTPServer
 import PerfectHTTP
 
-@_silgen_name("swsForwardRequestToHost") func swsForwardRequestToHost(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<HTTPRequest>!, response: UnsafeMutablePointer<HTTPResponse>!) -> Int
+@_silgen_name("swsForwardRequestToHost") func swsForwardRequestToHost(path: UnsafePointer<Int8>!, request: UnsafeMutablePointer<PerfectHTTP.HTTPRequest>!, response: UnsafeMutablePointer<PerfectHTTP.HTTPResponse>!) -> Int
 
 class Server {
     var config : ServerConfig!
@@ -26,7 +26,7 @@ class Server {
         self.config = config
     }
     
-    func staticFileHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func staticFileHandler(_ host: HostConfig, _ request: PerfectHTTP.HTTPRequest, _ response: PerfectHTTP.HTTPResponse) {
         let staticFileHandler: StaticFileHandler! = StaticFileHandler(documentRoot: host.docPath, allowResponseFilters: true)
         if request.path.endsWithFilePathSeparator {
             request.path = request.path + (host.welcomeFile ?? config.welcomeFile ?? "")
@@ -39,12 +39,12 @@ class Server {
     }
     
     
-    func hostRequestHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func hostRequestHandler(_ host: HostConfig, _ request: PerfectHTTP.HTTPRequest, _ response: PerfectHTTP.HTTPResponse) {
         var dynamicCode:Int! = 0
         if host.libraryPath != nil {
-            let requestPoint = UnsafeMutablePointer<HTTPRequest>.allocate(capacity: 1)
+            let requestPoint = UnsafeMutablePointer<PerfectHTTP.HTTPRequest>.allocate(capacity: 1)
             requestPoint.pointee = request
-            let responsePoint = UnsafeMutablePointer<HTTPResponse>.allocate(capacity: 1)
+            let responsePoint = UnsafeMutablePointer<PerfectHTTP.HTTPResponse>.allocate(capacity: 1)
             responsePoint.pointee = response
             dynamicCode = swsForwardRequestToHost(path:host.libraryPath!.cString(using: .utf8), request: requestPoint, response: responsePoint)
         } else {
@@ -56,7 +56,7 @@ class Server {
         }
         
     }
-    func pageNotFoundHandler(_ host: HostConfig, _ request: HTTPRequest, _ response: HTTPResponse) {
+    func pageNotFoundHandler(_ host: HostConfig, _ request: PerfectHTTP.HTTPRequest, _ response: PerfectHTTP.HTTPResponse) {
         let notFoundPagePath = host.docPath + "/" + (host.notFoundPage ?? config.notFoundPage ?? "404.html")
         do {
             let fileUrl: URL! = URL(fileURLWithPath: notFoundPagePath, isDirectory: false)
@@ -69,13 +69,13 @@ class Server {
         response.completed()
     }
     
-    func domainNotFoundHandler(_ request: HTTPRequest, _ response: HTTPResponse) {
+    func domainNotFoundHandler(_ request: PerfectHTTP.HTTPRequest, _ response: PerfectHTTP.HTTPResponse) {
         response.appendBody(string: "<html><title>domain error</title><body>domain error</body></html>")
         response.status = .badRequest
         response.completed();
     }
     
-    func requestHandler(_ request: HTTPRequest, _ response: HTTPResponse) {
+    func requestHandler(_ request: PerfectHTTP.HTTPRequest, _ response: PerfectHTTP.HTTPResponse) {
         let domain: String! = requestDomain(request)
         var success: Bool! = false
         for host in config.hostConfigs ?? [] {
@@ -91,7 +91,7 @@ class Server {
         }
     }
     
-    func requestDomain(_ request: HTTPRequest) -> String! {
+    func requestDomain(_ request: PerfectHTTP.HTTPRequest) -> String! {
         let host: String = request.header(HTTPRequestHeader.Name.host) ?? ""
         let portIndex : String.Index! = host.lastIndex(of: ":") ?? host.endIndex
         let domain : String! = String(host[host.startIndex ..< portIndex])
