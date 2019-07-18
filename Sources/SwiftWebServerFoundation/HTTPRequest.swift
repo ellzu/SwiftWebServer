@@ -6,7 +6,7 @@
 //
 
 
-public class HTTPRequest {
+public class HTTPRequest: Codable {
     init() {
         
     }
