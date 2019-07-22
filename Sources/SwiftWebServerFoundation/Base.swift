@@ -12,9 +12,9 @@ import PerfectHTTP
 var a:Int! = 0
 @_silgen_name("swsOnHostRequest_C")
 public func swsOnHostRequest(_ requestPointer: UnsafeMutablePointer<HTTPRequest>!, _ responsePointer: UnsafeMutablePointer<HTTPResponse>!) -> Int {
-    let request = requestPointer.pointee
-    let response = responsePointer.pointee
-    let cls:AnyClass? = NSClassFromString("SWSExample.UserRC")
+//    let request = requestPointer.pointee
+//    let response = responsePointer.pointee
+//    let cls:AnyClass? = NSClassFromString("SWSExample.UserRC")
 //    let sel = NSSelectorFromString("xxx")
 //    let obj:BaseRequestController? = (cls as! RequestControllerProtocol.Type).newInstance() as! BaseRequestController
 //    (obj.xxx(_:_:) as! (HTTPRequest,HTTPResponse) ->Void)(request,response)

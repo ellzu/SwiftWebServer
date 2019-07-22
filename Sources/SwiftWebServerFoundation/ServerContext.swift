@@ -6,7 +6,7 @@
 //
 
 
-public class ServerContext {
+open class ServerContext {
     
     internal var _request: HTTPRequest!
     public var request: HTTPRequest! {

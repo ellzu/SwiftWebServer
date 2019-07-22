@@ -9,7 +9,8 @@ import Foundation
 
 public class HTTPServer {
     
-    var delegate:ServerDelegate?
+    internal var delegate: ServerDelegate?
+//    internal var routes: [Routes]! = []
     
     static private var _instance: HTTPServer = HTTPServer()
     static public var instance: HTTPServer! {
@@ -38,13 +39,13 @@ public class HTTPServer {
     }
     
 
-    func serverDidLaunched() -> Void {
+    internal func serverDidLaunched() -> Void {
         
         delegate?.serverDidLaunched()
         
     }
     
-    func onRequestEvent(_ request: HTTPRequest, _ response: HTTPResponse) -> Void {
+    internal func onRequestEvent(_ request: HTTPRequest, _ response: HTTPResponse) -> Void {
         //让所有请求暂存在 dispatchRequestQueue
         self.dispatchRequestQueue.async {
             self.semaphore.wait()
@@ -64,8 +65,8 @@ public class HTTPServer {
                 
                 self.delegate?.willHandleRequest()
                 //TODO:
-                self.delegate?.handleRequest()
-                //TODO:
+                self.handleRequest();
+                
                 self.delegate?.didHandleRequest()
                 //TODO:
                 finishHandle()
@@ -77,8 +78,12 @@ public class HTTPServer {
         }
     }
     
+    internal func handleRequest() -> Void {
+        
+    }
     
 }
+
 
 @_silgen_name("SWSServerLoaded_C")
 public func SWSServerLoaded() -> Void {

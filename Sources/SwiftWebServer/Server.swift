@@ -103,7 +103,7 @@ class Server {
             throw SWSError("WebServer", -1, message: "config error")
         }
         
-        var routes = Routes()
+        var routes = PerfectHTTP.Routes()
         routes.add(uri: "/**", handler: self.requestHandler)
         
         try HTTPServer.launch(name: "localhost",

@@ -12,6 +12,6 @@ public protocol ServerDelegate {
     func serverDidLaunched() -> Void
     
     func willHandleRequest() -> Void
-    func handleRequest() -> Void
+//    func handleRequest() -> Void
     func didHandleRequest() -> Void
 }
